@@ -153,13 +153,17 @@ class Node:
 
     def play(self, temp, x=None, y=None):
         max_idx = -1
+        model_max_idx = -1
         self.mcts_p = Node.softmax(1/temp * np.log(self.N.astype('float32') + 1e-10))
         self.mcts_p = np.where(self.N == 0, 0., self.mcts_p)
         if x is None:
             max_idx = np.random.choice(range(Board.GRID_NUM),
-                                   p=self.mcts_p)
+                                       p=self.mcts_p)
+            model_max_idx = max_idx
         else:
             max_idx = Board.xy2idx(x, y)
+            model_max_idx = np.random.choice(range(Board.GRID_NUM),
+                                             p=self.mcts_p)
         if self.children[max_idx] == None:
             assert x is not None
             #print(f"len={len(self.children)} max_idx={max_idx}", flush=True)
@@ -169,8 +173,9 @@ class Node:
             if i != max_idx:
                 self.children[i] = None
         x, y = Board.idx2xy(max_idx)
+        model_x, model_y = Board.idx2xy(model_max_idx)
         #self.children[max_idx].clear()
-        return self.children[max_idx], x, y
+        return self.children[max_idx], x, y, model_x, model_y
 
 
     def generate_features(self, children_feature=None):
@@ -201,11 +206,10 @@ class Node:
         probs = np.exp(x-np.max(x))
         return probs/np.sum(probs)
 
-    def debug_info(self, logger, idx):
-        logger("player: %s\n" % (Board.player_id2str(self.player)))
-        logger("mcts_p:%.4f  p:%.4f  logic:%.4f\n" % (self.mcts_p[idx], self.P[idx], self.PTMP[idx]))
-        logger("q_u:%.4f  Q:%.4f  V:%.6f\n" % (self.q_plus_u[idx], self.Q[idx], self.V))
-        logger("N:%d  SUM:%d\n" % (self.N[idx], np.sum(self.N)))
-        #logger("self.P:\n%s\nself.QU:\n%s\nslef.N:\n%s\nself.Q:\n%s\n" % (str(self.P), str(self.q_plus_u), str(self.N), str(self.Q)))
+    def debug_info(self, logger, idx, predict_idx):
+        logger(f"player: {Board.player_id2str(self.player)}\n")
+        logger(f"mcts_p:{self.mcts_p[idx]:.4g}({self.mcts_p[predict_idx]:4g})  p:{self.P[idx]:.4f}({self.P[predict_idx]:.4f})  logic:{self.PTMP[idx]:.2f}({self.PTMP[predict_idx]:.2f})\n")
+        logger(f"q_u:{self.q_plus_u[idx]:.4f}({self.q_plus_u[predict_idx]:.4f})  Q:{self.Q[idx]:.4f}({self.Q[predict_idx]:.4f})  V:{self.V:.4f}\n")
+        logger(f"N:{self.N[idx]}({self.N[predict_idx]})  SUM:{np.sum(self.N)}\n")
         logger("\n")
 

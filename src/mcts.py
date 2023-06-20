@@ -41,6 +41,8 @@ class MCTS:
             self.fout = sys.stdout
         self.x = None
         self.y = None
+        self.predict_x = None
+        self.predict_y = None
         self.judge_time = -1.
         self.generate_training_data_time = -1.
         self.human_player = human_player
@@ -60,10 +62,12 @@ class MCTS:
         self.end_time = time.time()
         logger = self.fout.write
         idx = Board.xy2idx(self.x, self.y)
+        predict_idx = Board.xy2idx(self.predict_x, self.predict_y)
         logger("==\n")
         logger(f"Step {self.step-1}, time {self.end_time - self.begin_time:.2f}\n")
         logger(f"x,y: {self.x},{self.y}  idx: {idx}\n")
-        self.curr_node.parents.debug_info(logger, idx)
+        logger(f"move by model, x,y: {self.predict_x},{self.predict_y}\n")
+        self.curr_node.parents.debug_info(logger, idx, predict_idx)
         if self.winner != -100 or self.is_self_play is False:
             self.curr_node.board.print(logger)
             logger("\n")
@@ -113,7 +117,7 @@ class MCTS:
                 else:
                     self.fout.write("input error, try again.")
             x, y = int(arr[0]), int(arr[1])
-        self.curr_node, self.x, self.y = self.curr_node.play(temp, x, y)
+        self.curr_node, self.x, self.y, self.predict_x, self.predict_y = self.curr_node.play(temp, x, y)
         self.step += 1
 
     def judge(self):
