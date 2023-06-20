@@ -1,10 +1,12 @@
 # 使用
 ## 运行环境
-      请先安装git-lfs并且初始化lfs环境之后，在clone代码！！！
+      模型文件大小超过100M，需要使用lfs管理，请先安装git-lfs并且初始化lfs环境之后，在clone代码！！！
+      
       tensorflow version >= 2.7
       python version >= 3.8
-      git-lfs >= 3.3.0，模型文件大小超过100M，需要使用lfs管理。安装lfs后一定要记得运行初始化命令 ‘git lfs install’ ，否则模型文件不能正常clone。
-      centos/linux/macos(M1)上测试可以正常运行
+      git-lfs >= 3.3.0，安装lfs后一定要记得运行初始化命令 ‘git lfs install’ ，否则模型文件不能正常clone。
+      
+      在 centos/linux/macos(M1) 上测试可以正常运行代码。
 
 ## 配置参数
       代码在src文件夹下，训练相关的参数都在代码里，暂未把参数聚合成配置文件的方式。
