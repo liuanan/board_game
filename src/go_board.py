@@ -70,7 +70,8 @@ class GoBoard(BaseBoard):
         if -player in fake_death_stones:
             self.death_stones = fake_death_stones[-player]
         elif player in fake_death_stones:
-            self.death_stones = fake_death_stones[player]
+            return GoBoard.ILLEGAL
+            #self.death_stones = fake_death_stones[player]
         self.board[x, y] = 0
         if len(self.death_stones) == 1 \
             and len(last_remove_lsit) == 1 \
